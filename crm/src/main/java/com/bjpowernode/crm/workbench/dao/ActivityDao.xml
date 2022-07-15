@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.ActivityDao">
+
+    <insert id="save">
+        insert into tbl_activity(
+            id,
+            owner,
+            name,
+            startDate,
+            endDate,
+            cost,
+            description,
+            createTime,
+            createBy
+        )
+        values (
+            #{id},
+            #{owner},
+            #{name},
+            #{startDate},
+            #{endDate},
+            #{cost},
+            #{description},
+            #{createTime},
+            #{createBy}
+        )
+    </insert>
+
+    <select id="getActivityByCondition" resultType="com.bjpowernode.crm.workbench.domain.Activity">
+        select
+            a.id,
+            a.name,
+            u.name as owner,
+            a.startDate,
+            a.endDate
+        from tbl_activity a
+        join tbl_user u
+        on a.owner=u.id
+        <where>
+            <if test="Activity.name!=null and Activity.name!=''">
+                a.name like '%' #{Activity.name} '%'
+            </if>
+            <if test="Activity.startDate!=null and Activity.startDate!=''">
+                and a.startDate &gt; #{Activity.startDate}
+            </if>
+            <if test="Activity.endDate!=null and Activity.endDate!=''">
+                and a.endDate &lt; #{Activity.endDate}
+            </if>
+            <if test="Activity.owner!=null and Activity.owner!=''">
+                and u.name like '%' #{Activity.owner} '%'
+            </if>
+        </where>
+        order by a.createTime desc
+        limit #{skipCount},#{pageSize}
+    </select>
+
+    <select id="getTotalByCondition" resultType="int">
+        select count(*)
+        from tbl_activity a
+        join tbl_user u
+        on a.owner=u.id
+        <where>
+            <if test="Activity.name!=null and Activity.name!=''">
+                a.name like '%' #{Activity.name} '%'
+            </if>
+            <if test="Activity.startDate!=null and Activity.startDate!=''">
+                and a.startDate &gt; #{Activity.startDate}
+            </if>
+            <if test="Activity.endDate!=null and Activity.endDate!=''">
+                and a.endDate &lt; #{Activity.endDate}
+            </if>
+            <if test="Activity.owner!=null and Activity.owner!=''">
+                and u.name like '%' #{Activity.owner} '%'
+            </if>
+        </where>
+    </select>
+
+    <select id="getActivityById" resultType="com.bjpowernode.crm.workbench.domain.Activity">
+        select
+            a.id,
+            u.name as owner,
+            a.name,
+            a.startDate,
+            a.endDate,
+            a.cost,
+            a.description,
+            a.createTime,
+            a.createBy,
+            a.editTime,
+            a.editBy
+        from tbl_activity a
+        join tbl_user u
+        on a.owner=u.id
+        where a.id=#{id}
+    </select>
+
+    <delete id="deleteById">
+        delete from tbl_activity
+        where id=#{id}
+    </delete>
+
+    <update id="update">
+        update tbl_activity
+        set
+        owner=#{owner},
+        name=#{name},
+        startDate=#{startDate},
+        endDate=#{endDate},
+        cost=#{cost},
+        description=#{description},
+        editTime=#{editTime},
+        editBy=#{editBy}
+        where id=#{id}
+    </update>
+
+    <select id="getActivityByClueId" resultType="com.bjpowernode.crm.workbench.domain.Activity">
+        select
+            r.id as id,
+            a.name,
+            u.name as owner,
+            a.startDate,
+            a.endDate
+        from tbl_activity a
+        join tbl_user u
+        on a.owner=u.id
+        join tbl_clue_activity_relation r
+        on a.id=r.activityId
+        where r.clueId=#{clueid}
+    </select>
+
+    <select id="getActivityListByNameNotByClueId" resultType="com.bjpowernode.crm.workbench.domain.Activity">
+        select
+            a.id,
+            a.name,
+            u.name as owner,
+            a.startDate,
+            a.endDate
+        from tbl_activity a
+        join tbl_user u
+        on a.owner=u.id
+        where a.id not in(
+            select activityId from tbl_clue_activity_relation
+            where clueId=#{clueId}
+        ) and a.name like '%' #{aname} '%'
+    </select>
+
+    <select id="getActivityListByName" resultType="com.bjpowernode.crm.workbench.domain.Activity">
+        select
+            a.id,
+            a.name,
+            u.name as owner,
+            a.startDate,
+            a.endDate
+        from tbl_activity a
+        join tbl_user u
+        on a.owner=u.id
+        where a.name like '%' #{aname} '%'
+    </select>
+
+    <select id="getCharts" resultType="map">
+        select
+            name,count(*) as value
+            from tbl_activity
+            group by name
+    </select>
+
+    <update id="updateActivity">
+        update  tbl_activity set owner=#{owner},name=#{name},startDate=#{startDate},endDate=#{endDate},cost=#{cost},description=#{description},editBy=#{editBy},editTime=#{editTime}
+        where id=#{id}
+    </update>
+
+    <select id="getActivityByNameNotAid" resultType="com.bjpowernode.crm.workbench.domain.Activity">
+        select
+            a.id,
+            a.name,
+            u.name as owner,
+            a.startDate,
+            a.endDate
+        from tbl_activity a
+        join tbl_user u
+        on a.owner=u.id
+        where a.id not in(#{aid}) and a.name like '%' #{aname} '%'
+    </select>
+
+    <select id="getActivityByCon" resultType="com.bjpowernode.crm.workbench.domain.Activity">
+                select
+            a.id,
+            a.name,
+            u.name as owner,
+            a.startDate,
+            a.endDate
+        from tbl_activity a
+        join tbl_user u
+        on a.owner=u.id
+        where a.name like '%' #{aname} '%'
+    </select>
+
+</mapper>

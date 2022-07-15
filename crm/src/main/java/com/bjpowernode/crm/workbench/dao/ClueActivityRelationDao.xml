@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bjpowernode.crm.workbench.dao.ClueActivityRelationDao">
+	
+    <delete id="deleteByRelationId">
+        delete from tbl_clue_activity_relation
+        where id=#{id}
+    </delete>
+
+    <insert id="bund">
+        insert into tbl_clue_activity_relation(id,clueId,activityId)
+        values (#{id},#{clueId},#{activityId})
+    </insert>
+
+    <select id="getclueActivityRelationByClueId" resultType="com.bjpowernode.crm.workbench.domain.ClueActivityRelation">
+        select * from tbl_clue_activity_relation where clueId=#{clueId}
+    </select>
+
+    <delete id="delete">
+        delete from tbl_clue_activity_relation where clueId=#{clueId}
+    </delete>
+
+
+    <delete id="deleteActivityClueRelation">
+        delete from tbl_clue_activity_relation where activityId=#{aid}
+    </delete>
+
+    <select id="getRelationByAid" resultType="com.bjpowernode.crm.workbench.domain.ClueActivityRelation">
+        select * from tbl_clue_activity_relation where activityId=#{aid}
+    </select>
+
+    <select id="getRelationByCid" resultType="com.bjpowernode.crm.workbench.domain.ClueActivityRelation">
+        select * from tbl_clue_activity_relation where clueId=#{cid}
+    </select>
+
+    <delete id="deleteByCid">
+        delete from tbl_clue_activity_relation where clueId=#{cid}
+    </delete>
+  	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bjpowernode.crm.workbench.dao.CustomerDao">
+	
+  	<select id="getCustomerByName" resultType="com.bjpowernode.crm.workbench.domain.Customer">
+        select * from tbl_customer where name=#{name}
+    </select>
+
+
+    <select id="getCustomerName" resultType="string">
+        select name from tbl_customer where name like '%' #{name} '%'
+    </select>
+
+    <insert id="save">
+        insert into tbl_customer(
+            id,
+            owner,
+            name,
+            website,
+            phone,
+            createBy,
+            createTime,
+            contactSummary,
+            nextContactTime,
+            description,
+            address
+        )
+        values (
+            #{id},
+            #{owner},
+            #{name},
+            #{website},
+            #{phone},
+            #{createBy},
+            #{createTime},
+            #{contactSummary},
+            #{nextContactTime},
+            #{description},
+            #{address}
+        )
+    </insert>
+
+    <select id="getCustomerByCondition" resultType="com.bjpowernode.crm.workbench.domain.Customer">
+        select
+            c.id,
+            u.name as owner,
+            c.name,
+            c.website,
+            c.phone,
+            c.createBy,
+            c.createTime,
+            c.editBy,
+            c.editTime,
+            c.contactSummary,
+            c.nextContactTime,
+            c.description,
+            c.address
+        from tbl_customer c
+        join tbl_user u
+        on c.owner=u.id
+        <where>
+            <if test="Customer.name!=null and Customer.name!=''">
+                c.name like '%' #{Customer.name} '%'
+            </if>
+            <if test="Customer.phone!=null and Customer.phone!=''">
+                and c.phone like '%' #{Customer.phone} '%'
+            </if>
+            <if test="Customer.website!=null and Customer.website!=''">
+                and c.website like '%' #{Customer.website} '%'
+            </if>
+            <if test="Customer.owner!=null and Customer.owner!=''">
+                and u.name like '%' #{Customer.owner} '%'
+            </if>
+        </where>
+        order by c.createTime desc
+        limit #{skipCount},#{pageSize}
+
+    </select>
+
+    <select id="getTotalByCondition" resultType="int">
+        select count(*)
+        from tbl_customer c
+        join tbl_user u
+        on c.owner=u.id
+        <where>
+            <if test="Customer.name!=null and Customer.name!=''">
+                c.name like '%' #{Customer.name} '%'
+            </if>
+            <if test="Customer.phone!=null and Customer.phone!=''">
+                and c.phone like '%' #{Customer.phone} '%'
+            </if>
+            <if test="Customer.website!=null and Customer.website!=''">
+                and c.website like '%' #{Customer.website} '%'
+            </if>
+            <if test="Customer.owner!=null and Customer.owner!=''">
+                and u.name like '%' #{Customer.owner} '%'
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById">
+        delete from tbl_customer where id=#{id}
+    </delete>
+
+    <select id="getCustomerByid" resultType="com.bjpowernode.crm.workbench.domain.Customer">
+       select
+            c.id,
+            u.name as owner,
+            c.name,
+            c.website,
+            c.phone,
+            c.createBy,
+            c.createTime,
+            c.editBy,
+            c.editTime,
+            c.contactSummary,
+            c.nextContactTime,
+            c.description,
+            c.address
+        from tbl_customer c
+        join tbl_user u
+        on c.owner=u.id
+        where c.id=#{id}
+    </select>
+
+    <update id="update">
+        update tbl_customer set
+            id=#{id},
+            owner=#{owner},
+            name=#{name},
+            website=#{website},
+            phone=#{phone},
+            editBy=#{editBy},
+            editTime=#{editTime},
+            contactSummary=#{contactSummary},
+            nextContactTime=#{nextContactTime},
+            description=#{description},
+            address=#{address}
+        where id=#{id}
+    </update>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

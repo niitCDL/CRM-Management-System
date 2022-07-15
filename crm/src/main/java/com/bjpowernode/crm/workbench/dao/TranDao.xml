@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bjpowernode.crm.workbench.dao.TranDao">
+	
+  	<insert id="save">
+        insert into tbl_tran(
+            id,
+            owner,
+            money,
+            name,
+            expectedDate,
+            customerId,
+            stage,
+            type,
+            source,
+            activityId,
+            contactsId,
+            createBy,
+            createTime,
+            description,
+            contactSummary,
+            nextContactTime
+        )
+        values (
+            #{id},
+            #{owner},
+            #{money},
+            #{name},
+            #{expectedDate},
+            #{customerId},
+            #{stage},
+            #{type},
+            #{source},
+            #{activityId},
+            #{contactsId},
+            #{createBy},
+            #{createTime},
+            #{description},
+            #{contactSummary},
+            #{nextContactTime}
+        )
+    </insert>
+
+
+    <select id="getTranByCondition" resultType="com.bjpowernode.crm.workbench.domain.Tran">
+        select
+            tran.id,
+            u.name as owner,
+            tran.money,
+            tran.name,
+            tran.expectedDate,
+            cus.name as customerId,
+            tran.stage,
+            tran.type,
+            tran.source,
+            tran.activityId,
+            con.fullname as contactsId,
+            tran.createBy,
+            tran.createTime,
+            tran.editBy,
+            tran.editTime,
+            tran.description,
+            tran.contactSummary,
+            tran.nextContactTime
+        from tbl_tran tran
+        join tbl_user u
+        on u.id=tran.owner
+        join tbl_customer cus
+        on cus.id=tran.customerId
+        left join tbl_contacts con
+        on con.id=tran.contactsId
+        <where>
+            <if test="Tran.owner!=null and Tran.owner!=''">
+                u.name like '%' #{Tran.owner} '%'
+            </if>
+
+            <if test="Tran.customerId!=null and Tran.customerId!=''">
+                and cus.name like '%' #{Tran.customerId} '%'
+            </if>
+
+            <if test="Tran.contactsId!=null and Tran.contactsId!=''">
+                and con.fullname like '%' #{Tran.contactsId} '%'
+            </if>
+
+            <if test="Tran.name!=null and Tran.name!=''">
+                and tran.name like '%' #{Tran.name} '%'
+            </if>
+
+            <if test="Tran.stage!=null and Tran.stage!=''">
+                and tran.stage like '%' #{Tran.stage} '%'
+            </if>
+
+            <if test="Tran.type!=null and Tran.type!=''">
+                and tran.type like '%' #{Tran.type} '%'
+            </if>
+
+            <if test="Tran.source!=null and Tran.source!=''">
+                and Tran.source like '%' #{Tran.source} '%'
+            </if>
+        </where>
+        order by tran.createTime desc
+        limit #{skipCount},#{pageSize}
+    </select>
+
+
+    <select id="getTotalByCondition" resultType="int">
+        select
+        count(*)
+        from tbl_tran tran
+        join tbl_user u
+        on u.id=tran.owner
+        join tbl_customer cus
+        on cus.id=tran.customerId
+        left join tbl_contacts con
+        on con.id=tran.contactsId
+        <where>
+            <if test="Tran.owner!=null and Tran.owner!=''">
+                u.name like '%' #{Tran.owner} '%'
+            </if>
+
+            <if test="Tran.customerId!=null and Tran.customerId!=''">
+                and cus.name like '%' #{Tran.customerId} '%'
+            </if>
+
+            <if test="Tran.contactsId!=null and Tran.contactsId!=''">
+                and con.fullname like '%' #{Tran.contactsId} '%'
+            </if>
+
+            <if test="Tran.name!=null and Tran.name!=''">
+                and tran.name like '%' #{Tran.name} '%'
+            </if>
+
+            <if test="Tran.stage!=null and Tran.stage!=''">
+                and tran.stage like '%' #{Tran.stage} '%'
+            </if>
+
+            <if test="Tran.type!=null and Tran.type!=''">
+                and tran.type like '%' #{Tran.type} '%'
+            </if>
+
+            <if test="Tran.source!=null and Tran.source!=''">
+                and Tran.source like '%' #{Tran.source} '%'
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getTranById" resultType="com.bjpowernode.crm.workbench.domain.Tran">
+        select
+            tran.id,
+            ac.name as activityName,
+            u.name as owner,
+            tran.money,
+            tran.name,
+            tran.expectedDate,
+            cus.name as customerName,
+            tran.stage,
+            tran.type,
+            tran.source,
+            tran.activityId,
+            tran.contactsId,
+            tran.customerId,
+            con.fullname as contactsName,
+            tran.createBy,
+            tran.createTime,
+            tran.editBy,
+            tran.editTime,
+            tran.description,
+            tran.contactSummary,
+            tran.nextContactTime
+        from tbl_tran tran
+        join tbl_user u
+        on u.id=tran.owner
+        join tbl_customer cus
+        on cus.id=tran.customerId
+        left join tbl_contacts con
+        on con.id=tran.contactsId
+        left join tbl_activity ac
+        on tran.activityId=ac.id
+        where tran.id=#{id}
+    </select>
+
+
+    <update id="changeStage">
+        update tbl_tran set stage=#{stage},editBy=#{editBy},editTime=#{editTime}
+        where id=#{id}
+    </update>
+
+    <select id="getTotal" resultType="int">
+        select  count(DISTINCT stage) from tbl_tran
+    </select>
+
+    <select id="getCharts" resultType="map">
+        select count(*) as total,stage
+        from tbl_tran
+        group by stage
+    </select>
+
+    <select id="getTran" resultType="com.bjpowernode.crm.workbench.domain.Tran">
+        select * from tbl_tran where id=#{id}
+    </select>
+
+    <delete id="deleteByAid">
+        delete from tbl_tran where activityId=#{aid}
+    </delete>
+
+    <delete id="deleteByid">
+        delete from tbl_tran where id=#{id}
+    </delete>
+
+    <select id="getTranListByAId" resultType="com.bjpowernode.crm.workbench.domain.Tran">
+        select * from tbl_tran where activityId=#{id}
+    </select>
+
+    <update id="update">
+        update tbl_tran set
+        id=#{id},
+        owner=#{owner},
+        money=#{money},
+        name=#{name},
+        expectedDate=#{expectedDate},
+        customerId=#{customerId},
+        stage=#{stage},
+        type=#{type},
+        source=#{source},
+        activityId=#{activityId},
+        contactsId=#{contactsId},
+        editBy=#{editBy},
+        editTime=#{editTime},
+        description=#{description},
+        contactSummary=#{contactSummary},
+        nextContactTime=#{nextContactTime}
+        where id=#{id}
+    </update>
+
+    <select id="getTranListByCId" resultType="com.bjpowernode.crm.workbench.domain.Tran">
+        select * from tbl_tran where customerId=#{cid}
+    </select>
+
+    <delete id="deleteByCid">
+        delete from tbl_tran where customerId=#{cid}
+    </delete>
+
+    <select id="getTranListByConId" resultType="com.bjpowernode.crm.workbench.domain.Tran">
+        select * from tbl_tran where contactsId=#{conid}
+    </select>
+
+    <delete id="deleteByConid">
+        delete from tbl_tran where contactsId=#{conid}
+    </delete>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
